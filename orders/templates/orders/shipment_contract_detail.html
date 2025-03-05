@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+  <h2>Детали контракта {{ contract.contract_number }}</h2>
+  <ul>
+    <li><strong>Грузоотправитель:</strong> {{ contract.cargo_order.shipper.user.company_name }}</li>
+    <li><strong>Перевозчик:</strong> {{ contract.transport_order.carrier.user.company_name }}</li>
+    <li><strong>Заказ:</strong> CargoOrder #{{ contract.cargo_order.pk }}</li>
+    <li><strong>Стоимость:</strong> {{ contract.price }} руб.</li>
+    <li><strong>Срок оплаты:</strong> {{ contract.payment_deadline|date:"d.m.Y H:i" }}</li>
+    <li><strong>Срок доставки:</strong> {{ contract.delivery_deadline|date:"d.m.Y H:i" }}</li>
+  </ul>
+  <a href="{% url 'orders:cargo_order_list' %}">Вернуться к списку заказов</a>
+{% endblock %}

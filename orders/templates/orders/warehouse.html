@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h1>Виртуальный склад</h1>
+<p>
+  <a href="{% url 'orders:virtual_warehouse' %}" class="btn">Обновить склад</a>
+</p>
+<div id="warehouse-stock">
+    {% include "orders/warehouse_partial.html" %}
+</div>
+{% endblock %}

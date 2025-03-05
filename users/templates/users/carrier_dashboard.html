@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h1>Carrier Dashboard</h1>
+<p>Welcome, {{ request.user.username }}!</p>
+
+<h2>Orders Statistic</h2>
+<ul>
+    <li>Total orders: {{ total_transport_orders }}</li>
+    <li>Last orders:
+        <ul>
+            {% for order in recent_transport_orders %}
+                <li>{{ order }} — {{ order.created_at|date:"d.m.Y H:i" }}</li>
+            {% empty %}
+                <li>No orders found.</li>
+            {% endfor %}
+        </ul>
+    </li>
+</ul>
+
+<p>
+  <a href="{% url 'orders:transport_order_create' %}" class="btn">Create New Transport Order</a>
+  <a href="{% url 'orders:transport_item_create' %}" class="btn">Create Transport Item</a>
+</p>
+{% endblock %}

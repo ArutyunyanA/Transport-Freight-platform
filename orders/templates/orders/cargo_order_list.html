@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h1>Грузовые заказы</h1>
+
+<!-- Форма поиска -->
+<form id="search-form" method="get" action="{% url 'orders:cargo_order_list' %}">
+  <input type="text" name="q" placeholder="Поиск по названию груза" value="{{ request.GET.q }}">
+  <select name="category">
+    <option value="">Все категории</option>
+    {% for cat in cargo_categories %}
+      <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Найти</button>
+</form>
+
+<div id="order-list">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Грузоотправитель</th>
+        <th>Тип груза</th>
+        <th>Адрес погрузки</th>
+        <th>Адрес выгрузки</th>
+        <th>Цена</th>
+        <th>Дата создания</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+      <tr>
+        <td>{{ order.pk }}</td>
+        <td>{{ order.shipper.user.company_name }}</td>
+        <!-- Для "Тип груза" можно вывести имена грузовых позиций -->
+        <td>{% for item in order.cargo_item.all %}{{ item.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+        <!-- Отображение адресов: выводим значение "city" из первого элемента JSON-поля, если оно есть -->
+        <td>{% if order.loading_points %}{{ order.loading_points.0.city }}{% endif %}</td>
+        <td>{% if order.unloading_points %}{{ order.unloading_points.0.city }}{% endif %}</td>
+        <td>{{ order.price }} руб.</td>
+        <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+        <td>
+          <!-- Ссылка для показа маршрута на карте -->
+          <a href="{% url 'map:show_order_route' order.pk %}">Маршрут</a>
+          {% if not order.is_accepted %}
+            | <a href="{% url 'orders:cargo_order_detail' order.pk %}">Детали заказа</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="8">Заказы не найдены</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Пагинация -->
+  {% if is_paginated %}
+  <nav class="pagination">
+    {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">Назад</a>
+    {% endif %}
+    <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">Вперед</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <h2>Детали транспортного заказа #{{ order.pk }}</h2>
+  <ul>
+    <li><strong>Перевозчик:</strong> {{ order.carrier.user.company_name }}</li>
+    <li><strong>Пункт загрузки:</strong>
+      {% if order.loading_points and order.loading_points|length > 0 %}
+        {{ order.loading_points.0.city }}
+      {% else %}
+        N/A
+      {% endif %}
+    </li>
+    <li><strong>Пункт выгрузки:</strong>
+      {% if order.unloading_points and order.unloading_points|length > 0 %}
+        {{ order.unloading_points.0.city }}
+      {% else %}
+        N/A
+      {% endif %}
+    </li>
+    <li><strong>Транспортные единицы:</strong>
+      {% if order.transport_items.all %}
+        {% for item in order.transport_items.all %}
+          {{ item.get_trailer_type_display }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      {% else %}
+        N/A
+      {% endif %}
+    </li>
+    <li><strong>Страховка:</strong> {{ order.insurance|yesno:"Да,Нет" }}</li>
+    <li><strong>Дата создания:</strong> {{ order.created_at|date:"d.m.Y H:i" }}</li>
+  </ul>
+
+  <a href="{% url 'orders:transport_order_list' %}">Вернуться к списку транспортных заказов</a>
+{% endblock %}

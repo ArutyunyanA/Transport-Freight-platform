@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Транспортная биржа</title>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="{% url 'orders:cargo_order_list' %}">Cargo</a></li>
+        <li><a href="{% url 'orders:transport_order_list' %}">Transport</a></li>
+        <li><a href="{% url 'users:dashboard' %}">Dashboard</a></li>
+        <li><a href="{% url 'map:main_map' %}">Map</a></li>
+      </ul>
+      <ul class="auth-links">
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'users:logout' %}">Logout</a></li>
+        {% else %}
+          <li><a href="{% url 'users:register' %}">Sign up</a></li>
+          <li><a href="{% url 'users:login' %}">Login</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    <p>&copy; 2025 Transport solution</p>
+  </footer>
+</body>
+</html>
+

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <h1>Маршрут заказа #{{ order_id }}</h1>
+
+  <div id="map" style="height: 500px;"></div>
+
+  {% if route_info %}
+    <p><strong>Расстояние:</strong> {{ route_info.0.distance }} км</p>
+    <p><strong>Ожидаемое время в пути:</strong> {{ travel_time }} минут</p>
+    <p><strong>Стоимость топлива:</strong> {{ fuel_cost }} €</p>
+  {% else %}
+    <p>Маршрут не найден.</p>
+  {% endif %}
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+
+  <script>
+    mapboxgl.accessToken = "{{ mapbox_api_key|escapejs }}";
+    
+    // Если есть координаты загрузки, берем их для центра карты
+    const centerCoords = {% if loading_points and loading_points.0.coordinates %}
+      [{{ loading_points.0.coordinates.0 }}, {{ loading_points.0.coordinates.1 }}]
+    {% else %}
+      [0, 0]
+    {% endif %};
+
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: centerCoords,
+      zoom: 9
+    });
+
+    map.addControl(new mapboxgl.NavigationControl());
+
+    {% if route_info %}
+      const routeGeoJSON = {
+        "type": "Feature",
+        "geometry": {{ route_geometry|safe }}
+      };
+
+      map.on('load', function () {
+        map.addSource('route', {
+          "type": "geojson",
+          "data": routeGeoJSON
+        });
+        map.addLayer({
+          "id": "route",
+          "type": "line",
+          "source": "route",
+          "layout": {
+            "line-join": "round",
+            "line-cap": "round"
+          },
+          "paint": {
+            "line-color": "#007cbf",
+            "line-width": 4
+          }
+        });
+      });
+    {% endif %}
+  </script>
+
+  <a href="{% url 'orders:cargo_order_list' %}">Вернуться к списку заказов</a>
+{% endblock %}
+
+
+
+
+
+
+
+
+

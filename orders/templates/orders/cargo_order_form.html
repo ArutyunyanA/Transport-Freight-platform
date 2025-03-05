@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+  <h1>Создать грузовой заказ</h1>
+
+  {% if form.errors %}
+    <div class="form-errors" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 20px;">
+      <ul>
+        {% for field in form %}
+          {% if field.errors %}
+            <li><strong>{{ field.label }}:</strong> {{ field.errors|striptags }}</li>
+          {% endif %}
+        {% endfor %}
+        {% if form.non_field_errors %}
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        {% endif %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <form method="post" action="{% url 'orders:cargo_order_create' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Отправить заказ</button>
+  </form>
+{% endblock %}

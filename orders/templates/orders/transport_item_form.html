@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+  <h1>Create Transport Item</h1>
+  <form method="post" action="{% url 'orders:transport_item_create' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Transport Item</button>
+  </form>
+{% endblock %}
